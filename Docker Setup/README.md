@@ -1,0 +1,1 @@
+This folder contains docker setup in VMs
