@@ -3,7 +3,6 @@ pipeline {
     agent any
     environment {
         NEW_VERSION = '1.3.0'
-        BRANCH_NAME = "${GIT_BRANCH.split("/")[1]}"
     }
     stages {
         stage ("init") {
