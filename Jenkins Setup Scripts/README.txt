@@ -1,0 +1,1 @@
+This folder contains jenkins set up scripts
