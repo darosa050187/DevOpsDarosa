@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# Variable Declaration
+PACKAGE="httpd wget unzip"
+SVC="httpd"
+URL='https://www.tooplate.com/zip-templates/2137_barista_cafe.zip'
+ART_NAME='2137_barista_cafe'
+TEMPDIR="/tmp/webfiles"
+
+# Installing Dependencies
+ls /var/run/httpd &> /dev/null
+
+if [ $? -eq 0 ]
+then
+        echo "########################################"
+        echo "Packages already installed."
+        echo "########################################"
+else
+        echo "########################################"
+        echo "Installing packages."
+        echo "########################################"
+        sudo yum install $PACKAGE -y > /dev/null
+        if [ $? -eq 0 ]
+        then
+                echo "########################################"
+                echo "Packages installed successfully."
+                echo "########################################"
+        else
+                echo "########################################"
+                echo "Error installing the packages ($?) Contact the admin."
+                echo "########################################"
+        fi
+fi
+
+# Start & Enable Service
+echo "########################################"
+echo "Start & Enable HTTPD Service"
+echo "########################################"
+sudo systemctl start $SVC
+sudo systemctl enable $SVC
+echo
+
+# Creating Temp Directory
+echo "########################################"
+echo "Starting Artifact Deployment"
+echo "########################################"
+mkdir -p $TEMPDIR
+cd $TEMPDIR
+echo
+
+wget $URL > /dev/null
+unzip $ART_NAME.zip > /dev/null
+sudo cp -r $ART_NAME/* /var/www/html/
+echo
+
+# Bounce Service
+echo "########################################"
+echo "Restarting HTTPD service"
+echo "########################################"
+systemctl restart $SVC
+echo
+
+# Clean Up
+echo "########################################"
+echo "Removing Temporary Files"
+echo "########################################"
+rm -rf $TEMPDIR
+echo
+
+sudo systemctl status $SVC
+ls /var/www/html/
+
+# Retrieve IP
+IP_CONN=$(ip addr show | grep 192.168 | awk '{print $2}')
+echo "########################################"
+echo "System us up, you can connect using this IP $IP_CONN"
+echo "########################################"
